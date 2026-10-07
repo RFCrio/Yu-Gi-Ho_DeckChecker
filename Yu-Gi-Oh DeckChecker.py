@@ -206,7 +206,9 @@ def menu():
         choice = input("Enter your choice (0-4): ")
 
         if choice == '1':
-            add_card_to_checker()
+            yname = input("Enter your card: ")
+            quantity = input("Enter the quantity: ")
+            add_card_to_checker(yname, quantity)
             clean_terminals()
             pause()
         elif choice == '2':
@@ -214,11 +216,14 @@ def menu():
             clean_terminals()
             pause()
         elif choice == '3':
-            change_quantity_of_card()
+            yname = input("Enter your card: ")
+            quantity = input("Enter the quantity: ")
+            change_quantity_of_card(yname, quantity)
             clean_terminals()
             pause()
         elif choice == '4':
-            remove_card_from_checker()
+            yname = input("Enter your card: ")
+            remove_card_from_checker(yname)
             clean_terminals()
             pause()
         elif choice == '0':
