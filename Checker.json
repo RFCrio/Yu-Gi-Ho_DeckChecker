@@ -1,0 +1,84 @@
+{
+    "cards": [
+        {
+            "name": "House Dragonmaid",
+            "type": "Fusion Monster",
+            "desc": "1 \"Dragonmaid\" monster + 1 Dragon monster\r\nOnce per turn, during the Standby Phase: You can target 1 other \"Dragonmaid\" monster you control; Special Summon 1 \"Dragonmaid\" monster from your hand or GY in Defense Position, whose Level is 1 higher or 1 lower than it. When another face-up Dragon monster(s) you control returns to your hand (except during the Damage Step): You can target 1 monster your opponent controls; destroy it.",
+            "atk": 3000,
+            "def": 2000,
+            "level": 9,
+            "race": "Dragon",
+            "attribute": "LIGHT"
+        },
+        {
+            "name": "House Dragonmaid",
+            "type": "Fusion Monster",
+            "desc": "1 \"Dragonmaid\" monster + 1 Dragon monster\r\nOnce per turn, during the Standby Phase: You can target 1 other \"Dragonmaid\" monster you control; Special Summon 1 \"Dragonmaid\" monster from your hand or GY in Defense Position, whose Level is 1 higher or 1 lower than it. When another face-up Dragon monster(s) you control returns to your hand (except during the Damage Step): You can target 1 monster your opponent controls; destroy it.",
+            "atk": 3000,
+            "def": 2000,
+            "level": 9,
+            "race": "Dragon",
+            "attribute": "LIGHT"
+        },
+        {
+            "name": "House Dragonmaid",
+            "type": "Fusion Monster",
+            "desc": "1 \"Dragonmaid\" monster + 1 Dragon monster\r\nOnce per turn, during the Standby Phase: You can target 1 other \"Dragonmaid\" monster you control; Special Summon 1 \"Dragonmaid\" monster from your hand or GY in Defense Position, whose Level is 1 higher or 1 lower than it. When another face-up Dragon monster(s) you control returns to your hand (except during the Damage Step): You can target 1 monster your opponent controls; destroy it.",
+            "atk": 3000,
+            "def": 2000,
+            "level": 9,
+            "race": "Dragon",
+            "attribute": "LIGHT"
+        },
+        {
+            "name": "House Dragonmaid",
+            "type": "Fusion Monster",
+            "desc": "1 \"Dragonmaid\" monster + 1 Dragon monster\r\nOnce per turn, during the Standby Phase: You can target 1 other \"Dragonmaid\" monster you control; Special Summon 1 \"Dragonmaid\" monster from your hand or GY in Defense Position, whose Level is 1 higher or 1 lower than it. When another face-up Dragon monster(s) you control returns to your hand (except during the Damage Step): You can target 1 monster your opponent controls; destroy it.",
+            "atk": 3000,
+            "def": 2000,
+            "level": 9,
+            "race": "Dragon",
+            "attribute": "LIGHT"
+        },
+        {
+            "name": "c",
+            "type": "Normal Monster",
+            "desc": "A rare rainbow fish that has never been caught by mortal man.",
+            "atk": 1800,
+            "def": 800,
+            "level": 4,
+            "race": "Fish",
+            "attribute": "WATER"
+        },
+        {
+            "name": "d",
+            "type": "Normal Monster",
+            "desc": "A rare rainbow fish that has never been caught by mortal man.",
+            "atk": 1800,
+            "def": 800,
+            "level": 4,
+            "race": "Fish",
+            "attribute": "WATER"
+        },
+        {
+            "name": "7 Colored Fish",
+            "type": "Normal Monster",
+            "desc": "A rare rainbow fish that has never been caught by mortal man.",
+            "atk": 1800,
+            "def": 800,
+            "level": 4,
+            "race": "Fish",
+            "attribute": "WATER"
+        },
+        {
+            "name": "7 Colored Fish",
+            "type": "Normal Monster",
+            "desc": "A rare rainbow fish that has never been caught by mortal man.",
+            "atk": 1800,
+            "def": 800,
+            "level": 4,
+            "race": "Fish",
+            "attribute": "WATER"
+        }
+    ]
+}

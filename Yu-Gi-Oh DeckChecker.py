@@ -15,22 +15,30 @@ def save_deck_checker(data):
     with open(deck_checker, 'w') as f:
         json.dump(data, f, indent=4)
 
-def search_api(yugioh_name):
-    url = f'https://db.ygoprodeck.com/api/v7/cardinfo.php?{yugioh_name}'
+def search_api_name(yugioh_name):
+    url = f'https://db.ygoprodeck.com/api/v7/cardinfo.php?name={yugioh_name}'
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()
     return None
 
-def add_card_to_checker(yugioh_name, card_data):
+def search_api_id(yugioh_id):
+    url = f'https://db.ygoprodeck.com/api/v7/cardinfo.php?id={yugioh_id}'
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    return None
+
+def add_card_to_checker():
     Checker = load_deck_checker()
 
-    name = input("Enter the card name: ")
+    name = input("Enter the card name: ").strip()
     if not name:
         print("Please enter a valid card name.")
+        pause()
         return
 
-    API_data = search_api(yugioh_name)
+    API_data = search_api_name(name)
 
     new_card = None
     type = None
@@ -42,75 +50,63 @@ def add_card_to_checker(yugioh_name, card_data):
     attribute = None
 
     if API_data:
-        for card in API_data['data']:
-            if card['name'].lower() == yugioh_name.lower():
-                new_card = card
-                type = card.get('type', None)
-                desc = card.get('desc', None)
-                atk = card.get('atk', None)
-                defn = card.get('def', None)
-                level = card.get('level', None)
-                race = card.get('race', None)
-                attribute = card.get('attribute', None)
-                break
+        new_card = API_data
+        for new_card in API_data['data']:
+            
+            type = new_card.get('type', None)
+            desc = new_card.get('desc', None)
+            atk = new_card.get('atk', None)
+            defn = new_card.get('def', None)
+            level = new_card.get('level', None)
+            race = new_card.get('race', None)
+            attribute = new_card.get('attribute', None)
+            break
 
     if not new_card:
         print("Card not found. Please try using card ID.")
+        name = None
         new_ID = input("Enter the card ID: ")
-        API_data = search_api(new_ID)
+        API_data = search_api_id(new_ID)
         if API_data:
-            for card in API_data['data']:
-                if card['id'] == new_ID:
-                    new_card = card
-                    type = card.get('type', None)
-                    desc = card.get('desc', None)
-                    atk = card.get('atk', None)
-                    defn = card.get('def', None)
-                    level = card.get('level', None)
-                    race = card.get('race', None)
-                    attribute = card.get('attribute', None)
+            new_card = API_data
+            for new_card in API_data['data']:
+
+                    name = new_card.get('name', None)
+                    type = new_card.get('type', None)
+                    desc = new_card.get('desc', None)
+                    atk = new_card.get('atk', None)
+                    defn = new_card.get('def', None)
+                    level = new_card.get('level', None)
+                    race = new_card.get('race', None)
+                    attribute = new_card.get('attribute', None)
                     break
 
     if not new_card:
         print("Card not found. Please try again.")
+        pause()
         return
-    elif not type:
-        print("Incomplete card data. Please try again.")
-        return
-    elif not desc:
-        print("Card description is missing. Please try again.")
-        return
-    elif not atk:
-        print("Card attack value is missing. Please try again.")
-        return
-    elif not defn:
-        print("Card defense value is missing. Please try again.")
-        return
-    elif not level:
-        print("Card level is missing. Please try again.")
-        return
-    elif not race:
-        print("Card race is missing. Please try again.")
-        return
-    elif not attribute:
-        print("Card attribute is missing. Please try again.")
-        return
-
     
-    if any(card['name'].lower() == yugioh_name.lower() for card in Checker.get('cards', [])):
-        print("Card already exists in the deck checker.")
+    elif not type or not desc or not atk or not defn or not level or not race or not attribute:
+        print("Incomplete card data. Please try again.")
+        pause()
         return
 
-    Duplicate = sum(1 for card in Checker.get('cards', []) if card['name'].lower() == yugioh_name.lower())
+    if any(card['name'].lower() == name.lower() for card in Checker.get('cards', [])):
+        print("Card already exists in the deck checker.")
+        pause()
+        return
+
+    Duplicate = sum(1 for card in Checker.get('cards', []) if card['name'].lower() == name.lower())
     limit = 4 - Duplicate
 
     if Duplicate >= limit:
-        print(f"Maximum number of {yugioh_name} cards reached.")
+        print(f"Maximum number of {name} cards reached.")
+        pause()
         return
 
-    print(f"you already have {Duplicate} copies of {yugioh_name}. You can add {limit} more copies.")
+    print(f"you already have {Duplicate} copies of {name}. You can add {limit} more copies.")
     try:
-        copies_to_add = int(input(f"How many copies of {yugioh_name} would you like to add? (Max {limit}): "))
+        copies_to_add = int(input(f"How many copies of {name} would you like to add? (Max {limit}): "))
         if copies_to_add < 1 or copies_to_add > limit:
             print(f"Invalid number of copies. Please enter a number between 1 and {limit}.")
             return
@@ -119,7 +115,7 @@ def add_card_to_checker(yugioh_name, card_data):
         return
     for i in range(copies_to_add):
         Checker.setdefault('cards', []).append({
-            'name': yugioh_name,
+            'name': name,
             'type': type,
             'desc': desc,
             'atk': atk,
@@ -129,17 +125,19 @@ def add_card_to_checker(yugioh_name, card_data):
             'attribute': attribute
         })
     save_deck_checker(Checker)
-    print(f"{copies_to_add} copies of {yugioh_name} added to the deck checker.")
+    print(f"{copies_to_add} copies of {name} added to the deck checker.")
 
 
 def list_cards_in_checker():
     Checker = load_deck_checker()
     if not Checker.get('cards'):
         print("No cards in the deck checker.")
+        pause()
         return
     print("Cards in the deck checker:")
     for card in Checker['cards']:
         print(f"Name: {card['name']}, Type: {card['type']}, ATK: {card['atk']}, DEF: {card['def']}, Level: {card['level']}, Race: {card['race']}, Attribute: {card['attribute']}")
+    pause()
 
 def change_quantity_of_card(yugioh_name, new_quantity):
     Checker = load_deck_checker()
@@ -147,6 +145,7 @@ def change_quantity_of_card(yugioh_name, new_quantity):
     current_quantity = sum(1 for card in cards if card['name'].lower() == yugioh_name.lower())
     if current_quantity == 0:
         print(f"No copies of {yugioh_name} found in the deck checker.")
+        pause()
         return
     if new_quantity < 0 or new_quantity > 4:
         print("Invalid quantity. Please enter a number between 0 and 4.")
@@ -187,7 +186,7 @@ def remove_card_from_checker(yugioh_name):
 
 def clean_terminals():
     try:
-        from IPython .display import clear_output
+        from IPython.display import clear_output
         clear_output(wait=True)
     except ImportError:
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -228,3 +227,5 @@ def menu():
             print("Invalid choice. Please enter a number between 0 and 4.")
             clean_terminals()
             pause()
+
+menu()
