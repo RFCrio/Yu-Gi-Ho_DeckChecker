@@ -87,7 +87,7 @@ def add_card_to_checker():
         return
     
     elif not type or not desc or not atk or not defn or not level or not race or not attribute:
-        print("Incomplete card data. Please try again.")
+        print("Incomplete card data.")
         pause()
         return
 
@@ -105,14 +105,19 @@ def add_card_to_checker():
         return
 
     print(f"you already have {Duplicate} copies of {name}. You can add {limit} more copies.")
+
     try:
         copies_to_add = int(input(f"How many copies of {name} would you like to add? (Max {limit}): "))
         if copies_to_add < 1 or copies_to_add > limit:
             print(f"Invalid number of copies. Please enter a number between 1 and {limit}.")
+            pause()
             return
+        
     except ValueError:
         print("Invalid input. Please enter a valid number.")
+        pause()
         return
+    
     for i in range(copies_to_add):
         Checker.setdefault('cards', []).append({
             'name': name,
@@ -126,7 +131,8 @@ def add_card_to_checker():
         })
     save_deck_checker(Checker)
     print(f"{copies_to_add} copies of {name} added to the deck checker.")
-
+    pause()
+    return
 
 def list_cards_in_checker():
     Checker = load_deck_checker()
@@ -138,51 +144,56 @@ def list_cards_in_checker():
     for card in Checker['cards']:
         print(f"Name: {card['name']}, Type: {card['type']}, ATK: {card['atk']}, DEF: {card['def']}, Level: {card['level']}, Race: {card['race']}, Attribute: {card['attribute']}")
     pause()
+            
 
-def change_quantity_of_card(yugioh_name, new_quantity):
+def change_quantity_of_card():
     Checker = load_deck_checker()
+    name = input("Enter the card name you want to change the quantity of: ")
     cards = Checker.get('cards', [])
-    current_quantity = sum(1 for card in cards if card['name'].lower() == yugioh_name.lower())
+    current_quantity = sum(1 for card in cards if card['name'].lower() == name.lower())
+
     if current_quantity == 0:
-        print(f"No copies of {yugioh_name} found in the deck checker.")
+        print(f"No copies of {name} found in the deck checker.")
         pause()
         return
-    if new_quantity < 0 or new_quantity > 4:
-        print("Invalid quantity. Please enter a number between 0 and 4.")
-        return
-    if new_quantity > current_quantity:
-        limit = 4 - current_quantity
-        if new_quantity - current_quantity > limit:
-            print(f"Cannot add more than {limit} copies of {yugioh_name}.")
-            return
-        for h in range(new_quantity - current_quantity):
-            Checker.setdefault('cards', []).append(next(card for card in cards if card['name'].lower() == yugioh_name.lower()))
-    elif new_quantity < current_quantity:
-        cards_to_remove = current_quantity - new_quantity
-        removed_count = 0
-        for i in range(len(cards) - 1, -1, -1):
-            if cards[i]['name'].lower() == yugioh_name.lower() and removed_count < cards_to_remove:
-                del cards[i]
-                removed_count += 1
-    save_deck_checker(Checker)
-    print(f"Quantity of {yugioh_name} updated to {new_quantity}.")
 
-def remove_card_from_checker(yugioh_name):
-    Checker = load_deck_checker()
-    try:
-        card_name = input("Enter the card name to remove: ")
-    except EOFError:
-        print("No input provided. Exiting the removal process.")
-        return
-
-    new_deck = [card for card in Checker.get('cards', []) if card['name'].lower() != card_name.lower()]
-    if len(new_deck) == len(Checker.get('cards', [])):
-        print(f"No copies of {card_name} found in the deck checker.")
-        return
     else:
-        Checker['cards'] = new_deck
-        save_deck_checker(Checker)
-        print(f"All copies of {card_name} removed from the deck checker.")
+        print(f"You currently have {current_quantity} copies of {name}.")
+        try:
+            new_quantity = int(input(f"Enter the new quantity for {name} (0 to remove all): "))
+            if new_quantity < 0 or new_quantity > 4:
+                print("Invalid quantity. Please enter a number between 0 and 4.")
+                pause()
+                return
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+            pause()
+            return
+
+        if new_quantity == 0:
+            Checker['cards'] = [card for card in cards if card['name'].lower() != name.lower()]
+            save_deck_checker(Checker)
+            print(f"All copies of {name} removed from the deck checker.")
+            pause()
+            return
+
+        else:
+            Checker['cards'] = [card for card in cards if card['name'].lower() != name.lower()]
+            for i in range(new_quantity):
+                Checker.setdefault('cards', []).append({
+                    'name': name,
+                    'type': next((card['type'] for card in cards if card['name'].lower() == name.lower()), None),
+                    'desc': next((card['desc'] for card in cards if card['name'].lower() == name.lower()), None),
+                    'atk': next((card['atk'] for card in cards if card['name'].lower() == name.lower()), None),
+                    'def': next((card['def'] for card in cards if card['name'].lower() == name.lower()), None),
+                    'level': next((card['level'] for card in cards if card['name'].lower() == name.lower()), None),
+                    'race': next((card['race'] for card in cards if card['name'].lower() == name.lower()), None),
+                    'attribute': next((card['attribute'] for card in cards if card['name'].lower() == name.lower()), None)
+                })
+            save_deck_checker(Checker)
+            print(f"The quantity of {name} has been updated to {new_quantity}.")
+            pause()
+            return
 
 def clean_terminals():
     try:
@@ -199,32 +210,24 @@ def menu():
         print("\nYu-Gi-Oh! Deck Checker Menu:")
         print("1. Add a card to the deck checker")
         print("2. List all cards in the deck checker")
-        print("3. Change the quantity of a card")  
-        print("4. Remove a card from the deck checker")
+        print("3. Change the quantity of a card")
         print("0. Exit")
-        choice = input("Enter your choice (0-4): ")
+        choice = input("Enter your choice (0-3): ")
 
         if choice == '1':
             add_card_to_checker()
             clean_terminals()
-            pause()
         elif choice == '2':
             list_cards_in_checker()
             clean_terminals()
-            pause()
         elif choice == '3':
             change_quantity_of_card()
             clean_terminals()
-            pause()
-        elif choice == '4':
-            remove_card_from_checker()
-            clean_terminals()
-            pause()
         elif choice == '0':
             print("Closing Yu-Gi-Oh! Deck Checker.")
             break
         else:
-            print("Invalid choice. Please enter a number between 0 and 4.")
+            print("Invalid choice. Please enter a number between 0 and 3.")
             clean_terminals()
             pause()
 
