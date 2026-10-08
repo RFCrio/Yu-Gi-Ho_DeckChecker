@@ -71,9 +71,9 @@ def add_card_to_checker(yugioh_name, card_data):
                     attribute = card.get('attribute', None)
                     break
 
-    if not new_card:
-        print("Card not found. Please try again.")
-        return
+        if not new_card:
+            print("Card not found. Please try again.")
+            return
     elif not type:
         print("Incomplete card data. Please try again.")
         return
