@@ -40,6 +40,7 @@ def add_card_to_checker():
 
     API_data = search_api_name(name)
 
+    banned = None
     new_card = None
     type = None
     desc = None
@@ -51,16 +52,38 @@ def add_card_to_checker():
 
     if API_data:
         new_card = API_data
-        for new_card in API_data['data']:
+        banned = new_card.get('banlist_info', {}).get('ban_tcg')
+        if banned:
+            print(f"This card is {banned}. Are you sure you want to add it to the deck checker? (y/n): ")
+            choice = input().strip().lower()
+
+            if choice == 'n':
+                print("Card not added.")
+                pause()
+                return
             
-            type = new_card.get('type', None)
-            desc = new_card.get('desc', None)
-            atk = new_card.get('atk', None)
-            defn = new_card.get('def', None)
-            level = new_card.get('level', None)
-            race = new_card.get('race', None)
-            attribute = new_card.get('attribute', None)
-            break
+            else:
+                for new_card in API_data['data']:
+            
+                    type = new_card.get('type', None)
+                    desc = new_card.get('desc', None)
+                    atk = new_card.get('atk', None)
+                    defn = new_card.get('def', None)
+                    level = new_card.get('level', None)
+                    race = new_card.get('race', None)
+                    attribute = new_card.get('attribute', None)
+                    break
+        else:
+            for new_card in API_data['data']:
+
+                type = new_card.get('type', None)
+                desc = new_card.get('desc', None)
+                atk = new_card.get('atk', None)
+                defn = new_card.get('def', None)
+                level = new_card.get('level', None)
+                race = new_card.get('race', None)
+                attribute = new_card.get('attribute', None)
+                break
 
     if not new_card:
         print("Card not found. Please try using card ID.")
@@ -91,15 +114,10 @@ def add_card_to_checker():
         pause()
         return
 
-    if any(card['name'].lower() == name.lower() for card in Checker.get('cards', [])):
-        print("Card already exists in the deck checker.")
-        pause()
-        return
-
     Duplicate = sum(1 for card in Checker.get('cards', []) if card['name'].lower() == name.lower())
-    limit = 4 - Duplicate
+    limit = 3 - Duplicate
 
-    if Duplicate >= limit:
+    if Duplicate == 3:
         print(f"Maximum number of {name} cards reached.")
         pause()
         return
@@ -108,8 +126,8 @@ def add_card_to_checker():
 
     try:
         copies_to_add = int(input(f"How many copies of {name} would you like to add? (Max {limit}): "))
-        if copies_to_add < 1 or copies_to_add > limit:
-            print(f"Invalid number of copies. Please enter a number between 1 and {limit}.")
+        if copies_to_add < 0 or copies_to_add > limit:
+            print(f"Invalid number of copies. Please enter a number between 0 and {limit}.")
             pause()
             return
         
@@ -161,8 +179,8 @@ def change_quantity_of_card():
         print(f"You currently have {current_quantity} copies of {name}.")
         try:
             new_quantity = int(input(f"Enter the new quantity for {name} (0 to remove all): "))
-            if new_quantity < 0 or new_quantity > 4:
-                print("Invalid quantity. Please enter a number between 0 and 4.")
+            if new_quantity < 0 or new_quantity > 3:
+                print("Invalid quantity. Please enter a number between 0 and 3.")
                 pause()
                 return
         except ValueError:
@@ -211,8 +229,9 @@ def menu():
         print("1. Add a card to the deck checker")
         print("2. List all cards in the deck checker")
         print("3. Change the quantity of a card")
+        print("4. Show ban list")
         print("0. Exit")
-        choice = input("Enter your choice (0-3): ")
+        choice = input("Enter your choice (0-4): ")
 
         if choice == '1':
             add_card_to_checker()
@@ -223,6 +242,9 @@ def menu():
         elif choice == '3':
             change_quantity_of_card()
             clean_terminals()
+        elif choice == '4':
+            show_banlist()
+            clean_terminals()
         elif choice == '0':
             print("Closing Yu-Gi-Oh! Deck Checker.")
             break
@@ -230,5 +252,21 @@ def menu():
             print("Invalid choice. Please enter a number between 0 and 3.")
             clean_terminals()
             pause()
+
+def show_banlist():
+    url = "https://db.ygoprodeck.com/api/v7/cardinfo.php?banlist=tcg"
+
+    banlist = requests.get(url)
+
+    if banlist.status_code == 200:
+        data = banlist.json()
+
+        for card in data['data']:
+            name = card['name']
+            status = card['banlist_info']['ban_tcg']
+            print(f"{name}: {status}")
+        pause()
+    else:
+        print(f"Error to show Ban List")
 
 menu()
